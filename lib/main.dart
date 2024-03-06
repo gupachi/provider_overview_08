@@ -40,8 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Provider 08'),
       ),
-      body: Consumer<Dog>(
-        builder: (BuildContext context, Dog dog, Widget? child) {
+      body: Selector<Dog, String>(
+        selector: (BuildContext context, Dog dog) => dog.name,
+        builder: (BuildContext context,String name, Widget? child) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child!,
                 SizedBox(height: 10.0),
                 Text(
-                  '- name: ${dog.name}',
+                  '- name: ${name}',
                   style: TextStyle(fontSize: 20.0),
                 ),
                 SizedBox(height: 10.0),
@@ -75,6 +76,9 @@ class BreedAndAge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //column 대신에 container 사용
+    // consumer 를 사용하는 이유는 column 인 UI 기능보다 더 provider 에 유동적으로 쓸 수 있어서이다.
+    //builder 랑 child 랑 쓰는 거에 따라 
     return Consumer<Dog>(
       builder: (_, Dog dog, __) {
         return Column(
@@ -99,17 +103,19 @@ class Age extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Dog>(
-      builder: (_, dog, __) {
+    return Selector<Dog , int>(
+      //builder 에서 쓰면 내부 ui 에서는 쓸 필요가 없다. 
+      selector:(BuildContext context,Dog dog) => dog.age,
+      builder: (_, int age, __) {
         return Column(
           children: [
             Text(
-              '- age: ${dog.age}',
+              '- age: $age',
               style: TextStyle(fontSize: 20.0),
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () => dog.grow(),
+              onPressed: () => context.read<Dog>().grow(),
               child: Text(
                 'Grow',
                 style: TextStyle(fontSize: 20.0),
